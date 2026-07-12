@@ -2,6 +2,6 @@ PROVIDER = "groq"
 
 MODEL = "qwen/qwen3-32b"
 
-TEMPERATURE = 0.5
+TEMPERATURE = 0.3
 
 MAX_TOKENS = 500

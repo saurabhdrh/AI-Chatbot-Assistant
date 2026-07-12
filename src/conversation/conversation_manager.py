@@ -1,4 +1,5 @@
 from src.models.message import Message
+from src.prompts.system_prompt import SYSTEM_PROMPT
 
 class ConversationManager:
     """
@@ -6,7 +7,12 @@ class ConversationManager:
     """
 
     def __init__(self):
-        self.messages = []
+        self.messages = [
+        Message(
+            role="system",
+            content=SYSTEM_PROMPT
+        )
+    ]
 
     def add_user_message(self, content: str):
         self.messages.append(
@@ -31,4 +37,9 @@ class ConversationManager:
         ]
 
     def clear(self):
-        self.messages.clear()
+        self.messages = [
+            Message(
+                role="system",
+                content=SYSTEM_PROMPT
+            )
+        ]

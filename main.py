@@ -20,6 +20,17 @@ while True:
     print(f"\nAI: {answer}\n")
 
 print(f"\nMemory: {conversation.get_messages()}\n")
+usage = response.usage
+
+print("Token Usage")
+print("-" * 20)
+print(f"Prompt Tokens     : {usage.prompt_tokens}")
+print(f"Completion Tokens : {usage.completion_tokens}")
+print(f"Total Tokens      : {usage.total_tokens}")
+print()
+
+
+
 # from src.services.llm_service import ask_llm
 
 # print("=" * 50)

@@ -144,3 +144,4 @@ project-name/
 | `uv pip list` | List installed packages |
 | `uv run main.py` | Run the application |
 | `uv sync` | Synchronize dependencies from `pyproject.toml` |
+

@@ -1,3 +1,9 @@
+"""Application logging setup.
+
+Importing this module configures the root logger to write to
+``logs/chatbot.log`` and exposes a ready-to-use ``logger`` instance.
+"""
+
 import logging
 from pathlib import Path
 

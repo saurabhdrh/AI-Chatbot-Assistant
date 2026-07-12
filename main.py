@@ -18,18 +18,22 @@ print("Type /clear to clear history.\n")
 print("Type /exit to quit.\n")
 
 while True:
-    user_input = input("You: ").strip()
-    
-    if user_input.lower() == "/help":
-        show_help()
-        continue
-    if user_input.lower() == "/clear":
-        conversation.clear()
-        print("Conversation cleared.")
-        continue
-    if user_input.lower() == "/exit":
-        print("\n👋 Goodbye!")
-        break
+    try:
+        user_input = input("You: ").strip()
+        
+        if user_input.lower() == "/help":
+            show_help()
+            continue
+        if user_input.lower() == "/clear":
+            conversation.clear()
+            print("Conversation cleared.")
+            continue
+        if user_input.lower() == "/exit":
+            print("\n👋 Goodbye!")
+            break
+    except Exception as e:
+            print("\n❌ Something went wrong.")
+            print(f"Reason: {e}")
 
     conversation.add_user_message(user_input)
     response = ask_llm(conversation.get_messages())

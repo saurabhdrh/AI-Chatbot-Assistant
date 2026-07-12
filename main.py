@@ -2,6 +2,7 @@
 
 from src.conversation.conversation_manager import ConversationManager
 from src.services.llm_service import ask_llm
+from src.utils.logger import logger
 
 
 def show_help() -> None:
@@ -25,6 +26,7 @@ def print_welcome() -> None:
 def run_chat() -> None:
     conversation = ConversationManager()
     print_welcome()
+    logger.info("Chat session started.")
 
     while True:
         try:
@@ -53,6 +55,7 @@ def run_chat() -> None:
         try:
             answer = ask_llm(conversation.get_messages())
         except Exception as exc:  # surface any provider/network error, keep chatting
+            logger.exception("Error while contacting the AI provider.")
             print(f"\nSomething went wrong while contacting the AI: {exc}\n")
             continue
 

@@ -1,33 +1,84 @@
-# Project Setup Guide
+# AI Chatbot Assistant
 
-This guide explains how to set up the project using **VS Code** and **uv**, a fast Python package and virtual environment manager.
+A simple, interactive **command-line chatbot** powered by a Large Language Model
+(LLM). It talks to the **Groq API** using an OpenAI-compatible client, keeps track
+of your conversation history, and runs entirely in your terminal.
 
-## Prerequisites
+This guide walks you through everything you need to run the chatbot on a fresh
+machine — no prior knowledge of the project required.
 
-Before you begin, ensure you have:
+![alt text](/assets/images/image.png)
+---
 
-- Visual Studio Code
-- Python 3.10 or later
-- Git (optional but recommended)
+## What You Get
+
+- 💬 Interactive chat loop in your terminal
+- 🧠 Conversation memory (the bot remembers earlier messages in the session)
+- ⚙️ Configurable model, temperature, and token limits via environment variables
+- 🔌 Powered by [Groq](https://groq.com/) through an OpenAI-compatible API
+- ✅ A small test suite you can run to confirm everything works
 
 ---
 
-## Step 1: Create/Open the Project in VS Code
+## Prerequisites
 
-- Open **Visual Studio Code**.
-- Create a new project folder or open an existing project.
+Install these before you start:
+
+| Requirement | Notes |
+|-------------|-------|
+| **Python 3.13+** | Required. Check with `python --version`. |
+| **[uv](https://docs.astral.sh/uv/)** | Fast Python package & environment manager (install steps below). |
+| **A Groq API key** | Free — create one at <https://console.groq.com/keys>. |
+| **Git** | Optional, only if you want to clone the repo. |
+| **Visual Studio Code** | Optional, any editor/terminal works. |
+
+---
+
+## Quick Start (TL;DR)
+
+If you already have `uv` and a Groq API key, run these from the project folder:
+
+```powershell
+uv sync                       # install dependencies
+copy .env.example .env        # create your env file (Windows)
+# then edit .env and set GROQ_API_KEY=your_key_here
+uv run main.py                # start chatting
+```
+
+For a step-by-step walkthrough, keep reading.
+
+---
+
+## Step 1: Get the Project
+
+If you have the project folder already, open it in VS Code and skip to Step 2.
+
+Otherwise, clone or download it, then open the folder:
+
+```bash
+git clone <repository-url>
+cd AI-Chatbot-Assistant
+```
 
 ---
 
 ## Step 2: Install `uv`
 
-Open a PowerShell terminal in VS Code and run:
+`uv` manages the virtual environment and dependencies for you.
+
+**Windows (PowerShell):**
 
 ```powershell
 powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
 ```
 
-Verify the installation:
+**macOS / Linux:**
+
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+Close and reopen your terminal, then verify:
 
 ```bash
 uv --version
@@ -35,101 +86,165 @@ uv --version
 
 ---
 
-## Step 3: Initialize the Project
+## Step 3: Install Dependencies
 
-Initialize a new Python project:
+From the project root, run:
 
 ```bash
-uv init
+uv sync
 ```
 
-This creates the project configuration file (`pyproject.toml`).
+This automatically:
+
+1. Creates a virtual environment in a `.venv` folder.
+2. Installs everything declared in `pyproject.toml` (and pinned in `uv.lock`).
+
+> You do **not** need to manually create or activate the virtual environment when
+> you use `uv run`. `uv` handles it for you. (If you prefer to activate it anyway,
+> see [Optional: Activate the Virtual Environment](#optional-activate-the-virtual-environment).)
 
 ---
 
-## Step 4: Create a Virtual Environment
+## Step 4: Configure Your API Key
 
-Create a virtual environment using `uv`:
+The chatbot needs a Groq API key to work.
 
-```bash
-uv venv
-```
+1. Copy the example environment file:
 
-This creates a `.venv` folder in your project.
+   ```powershell
+   copy .env.example .env      # Windows
+   ```
 
----
+   ```bash
+   cp .env.example .env        # macOS/Linux
+   ```
 
-## Step 5: Activate the Virtual Environment
+2. Open `.env` and paste your key:
 
-### Windows (PowerShell)
+   ```text
+   GROQ_API_KEY=your_key_here
+   ```
 
-```powershell
-.venv\Scripts\Activate
-```
+> 🔐 The `.env` file holds a secret and is git-ignored. **Never commit it.**
 
-### Windows (Command Prompt)
+### Optional Settings
 
-```cmd
-.venv\Scripts\activate.bat
-```
+You can override these defaults in `.env` (all optional):
 
-### macOS/Linux
+| Variable      | Default          | Description                             |
+|---------------|------------------|-----------------------------------------|
+| `PROVIDER`    | `groq`           | LLM provider name.                      |
+| `MODEL`       | `qwen/qwen3-32b` | Model identifier to use.                |
+| `TEMPERATURE` | `0.3`            | Sampling randomness, `0.0`–`2.0`.       |
+| `MAX_TOKENS`  | `500`            | Maximum tokens in a single reply, `> 0`.|
 
-```bash
-source .venv/bin/activate
-```
-
-After activation, your terminal prompt should display:
-
-```text
-(.venv)
-```
+Invalid values (e.g. a non-numeric `TEMPERATURE`) cause the app to fail
+immediately at startup with a clear error message.
 
 ---
 
-## Step 6: Install Project Dependencies
-
-Install all required packages from the `requirements.txt` file:
-
-```bash
-uv add -r requirements.txt
-```
-
----
-
-## Verify the Installation
-
-Check the installed packages:
-
-```bash
-uv pip list
-```
-
----
-
-## Run the Application
-
-Start the application using:
+## Step 5: Run the Chatbot
 
 ```bash
 uv run main.py
 ```
 
+You should see a welcome banner. Type a message, press **Enter**, and the AI
+replies.
+
+### Chat Commands
+
+| Command  | Description                    |
+|----------|--------------------------------|
+| `/help`  | Show the list of commands      |
+| `/clear` | Clear the conversation history |
+| `/exit`  | Exit the chatbot               |
+
+You can also press **Ctrl+C** to quit at any time.
+
 ---
 
-## Project Structure (Example)
+## Run the Tests
+
+Confirm everything is wired up correctly:
+
+```bash
+uv run pytest
+```
+
+The tests live in the `tests/` folder and do not require a network connection or
+API key.
+
+---
+
+## Project Structure
 
 ```text
-project-name/
+AI-Chatbot-Assistant/
+│
+├── main.py                     # Entry point: the interactive chat loop
+├── config.py                   # Loads and validates configuration/env vars
+├── pyproject.toml              # Project metadata and dependencies
+├── .env.example                # Template for your local .env file
+├── README.md                   # This guide
 │
 ├── src/
-├── main.py
-├── requirements.txt
-├── pyproject.toml
-├── uv.lock
-├── README.md
-└── .venv/
+│   ├── conversation/
+│   │   └── conversation_manager.py   # Tracks message history
+│   ├── models/
+│   │   └── message.py                # Message data model
+│   ├── prompts/
+│   │   └── system_prompt.py          # Defines the assistant's persona
+│   ├── providers/
+│   │   └── groq_provider.py          # Talks to the Groq API
+│   ├── services/
+│   │   └── llm_service.py            # Routes requests to the provider
+│   └── utils/
+│       └── logger.py                 # Logging helper
+│
+└── tests/                      # Test suite
+    ├── test_conversation.py
+    └── test_message.py
 ```
+
+---
+
+## Troubleshooting
+
+| Problem | Cause & Fix |
+|---------|-------------|
+| `GROQ_API_KEY is not set` | You skipped Step 4. Create `.env` and set `GROQ_API_KEY`. |
+| `uv: command not found` | `uv` isn't installed or your terminal wasn't restarted. Redo Step 2 and open a new terminal. |
+| `TEMPERATURE must be a number...` (or similar) | An invalid value is set in `.env`. Fix it to match the ranges in [Optional Settings](#optional-settings). |
+| `Something went wrong while contacting the AI` | Network issue, invalid API key, or Groq outage. Check your internet connection and confirm your key at <https://console.groq.com/keys>. |
+| Python version errors | This project needs **Python 3.13+**. Check with `python --version` and upgrade if needed. |
+
+---
+
+## Optional: Activate the Virtual Environment
+
+`uv run` doesn't require manual activation, but if you want an activated shell
+(for running `python`, `pytest`, etc. directly):
+
+**Windows (PowerShell):**
+
+```powershell
+.venv\Scripts\Activate
+```
+
+**Windows (Command Prompt):**
+
+```cmd
+.venv\Scripts\activate.bat
+```
+
+**macOS / Linux:**
+
+```bash
+source .venv/bin/activate
+```
+
+When active, your prompt shows `(.venv)`.
 
 ---
 
@@ -137,11 +252,10 @@ project-name/
 
 | Command | Description |
 |---------|-------------|
-| `uv init` | Initialize a new project |
-| `uv venv` | Create a virtual environment |
-| `uv add <package>` | Install a package |
-| `uv add -r requirements.txt` | Install packages from requirements file |
+| `uv sync` | Install/update dependencies from `pyproject.toml` |
+| `uv add <package>` | Add a new dependency |
+| `uv run main.py` | Run the chatbot |
+| `uv run pytest` | Run the test suite |
 | `uv pip list` | List installed packages |
-| `uv run main.py` | Run the application |
-| `uv sync` | Synchronize dependencies from `pyproject.toml` |
+| `uv venv` | Create a virtual environment manually |
 

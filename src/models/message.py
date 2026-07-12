@@ -1,18 +1,21 @@
-from dataclasses import dataclass
-@dataclass
-class Message:
-    """
-    Represents one message in a conversation.
-    """
+"""Message model for a single conversation message."""
 
-    role: str
+from dataclasses import dataclass
+from typing import Literal
+
+Role = Literal["system", "user", "assistant"]
+
+
+@dataclass(frozen=True)
+class Message:
+    """Represents one message in a conversation."""
+
+    role: Role
     content: str
 
-    def to_dict(self) -> dict:
-        """
-        Convert the Message object into the format expected by the LLM API.
-        """
+    def to_dict(self) -> dict[str, str]:
+        """Convert the Message into the format expected by the LLM API."""
         return {
             "role": self.role,
-            "content": self.content
+            "content": self.content,
         }

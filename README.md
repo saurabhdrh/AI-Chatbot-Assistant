@@ -7,7 +7,7 @@ This guide explains how to set up the project using **VS Code** and **uv**, a fa
 Before you begin, ensure you have:
 
 - Visual Studio Code
-- Python 3.10 or later
+- Python 3.13 or later
 - Git (optional but recommended)
 
 ---
@@ -89,11 +89,33 @@ After activation, your terminal prompt should display:
 
 ## Step 6: Install Project Dependencies
 
-Install all required packages from the `requirements.txt` file:
+Install all dependencies declared in `pyproject.toml` (and pinned in `uv.lock`):
 
 ```bash
-uv add -r requirements.txt
+uv sync
 ```
+
+---
+
+## Step 7: Configure Environment Variables
+
+This app calls the Groq API and requires an API key.
+
+1. Copy the example file and fill in your key:
+
+   ```bash
+   copy .env.example .env   # Windows
+   # cp .env.example .env    # macOS/Linux
+   ```
+
+2. Edit `.env` and set your key:
+
+   ```text
+   GROQ_API_KEY=your_key_here
+   ```
+
+The `.env` file is git-ignored and must never be committed. Optional overrides
+(`PROVIDER`, `MODEL`, `TEMPERATURE`, `MAX_TOKENS`) are documented in `.env.example`.
 
 ---
 
@@ -115,6 +137,23 @@ Start the application using:
 uv run main.py
 ```
 
+### Chat Commands
+
+Once running, type a message and press Enter to chat. The following commands are
+available:
+
+| Command  | Description              |
+|----------|--------------------------|
+| `/help`  | Show the command list    |
+| `/clear` | Clear conversation history |
+| `/exit`  | Exit the chatbot         |
+
+### Run the Tests
+
+```bash
+uv run pytest
+```
+
 ---
 
 ## Project Structure (Example)
@@ -124,9 +163,9 @@ project-name/
 │
 ├── src/
 ├── main.py
-├── requirements.txt
 ├── pyproject.toml
 ├── uv.lock
+├── .env.example
 ├── README.md
 └── .venv/
 ```
@@ -140,8 +179,8 @@ project-name/
 | `uv init` | Initialize a new project |
 | `uv venv` | Create a virtual environment |
 | `uv add <package>` | Install a package |
-| `uv add -r requirements.txt` | Install packages from requirements file |
+| `uv sync` | Synchronize dependencies from `pyproject.toml` |
 | `uv pip list` | List installed packages |
 | `uv run main.py` | Run the application |
-| `uv sync` | Synchronize dependencies from `pyproject.toml` |
+| `uv run pytest` | Run the test suite |
 

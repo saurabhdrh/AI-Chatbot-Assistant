@@ -1,6 +1,10 @@
+"""Interactive command-line chatbot entry point."""
+
 from src.conversation.conversation_manager import ConversationManager
 from src.services.llm_service import ask_llm
-def show_help():
+
+
+def show_help() -> None:
     print("\nAvailable Commands")
     print("------------------------")
     print("/help  - Show help")
@@ -8,58 +12,57 @@ def show_help():
     print("/exit  - Exit chatbot")
     print()
 
-conversation = ConversationManager()
 
-print("=" * 50)
-print(" Welcome to My AI Chatbot ")
-print("=" * 50)
-print("Type /help for help.\n")
-print("Type /clear to clear history.\n")
-print("Type /exit to quit.\n")
+def print_welcome() -> None:
+    print("=" * 50)
+    print(" Welcome to My AI Chatbot ")
+    print("=" * 50)
+    print("Type /help for help.")
+    print("Type /clear to clear history.")
+    print("Type /exit to quit.\n")
 
-while True:
-    try:
-        user_input = input("You: ").strip()
-        
-        if user_input.lower() == "/help":
+
+def run_chat() -> None:
+    conversation = ConversationManager()
+    print_welcome()
+
+    while True:
+        try:
+            user_input = input("You: ").strip()
+        except (EOFError, KeyboardInterrupt):
+            print("\nGoodbye!")
+            break
+
+        if not user_input:
+            continue
+
+        command = user_input.lower()
+        if command == "/help":
             show_help()
             continue
-        if user_input.lower() == "/clear":
+        if command == "/clear":
             conversation.clear()
             print("Conversation cleared.")
             continue
-        if user_input.lower() == "/exit":
-            print("\n Goodbye!")
+        if command == "/exit":
+            print("\nGoodbye!")
             break
-    except Exception as e:
-            print("\n Something went wrong.")
-            print(f"Reason: {e}")
 
-    conversation.add_user_message(user_input)
-    response = ask_llm(conversation.get_messages())
-    answer = response.choices[0].message.content
-    conversation.add_assistant_message(answer)
-    print(f"\nAI: {answer}\n")
+        conversation.add_user_message(user_input)
 
-print(f"\nMemory: {conversation.get_messages()}\n")
-print()
+        try:
+            answer = ask_llm(conversation.get_messages())
+        except Exception as exc:  # surface any provider/network error, keep chatting
+            print(f"\nSomething went wrong while contacting the AI: {exc}\n")
+            continue
 
+        conversation.add_assistant_message(answer)
+        print(f"\nAI: {answer}\n")
 
 
-# from src.services.llm_service import ask_llm
+def main() -> None:
+    run_chat()
 
-# print("=" * 50)
-# print("Welcome to My First AI Chatbot")
-# print("=" * 50)
 
-# question = input("\nYou: ")
-
-# response = ask_llm(question)
-# print("\nAssistant:")
-# print(response.choices[0].message.content)
-# print("\nToken Usage")
-# print("-" * 20)
-
-# print(f"Prompt Tokens     : {response.usage.prompt_tokens}")
-# print(f"Completion Tokens : {response.usage.completion_tokens}")
-# print(f"Total Tokens      : {response.usage.total_tokens}")
+if __name__ == "__main__":
+    main()

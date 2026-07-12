@@ -29,10 +29,10 @@ while True:
             print("Conversation cleared.")
             continue
         if user_input.lower() == "/exit":
-            print("\n👋 Goodbye!")
+            print("\n Goodbye!")
             break
     except Exception as e:
-            print("\n❌ Something went wrong.")
+            print("\n Something went wrong.")
             print(f"Reason: {e}")
 
     conversation.add_user_message(user_input)
